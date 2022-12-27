@@ -1,3 +1,16 @@
 {
-  "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
+  "recommendations": [
+    "vue.volar",
+    "formulahendry.auto-complete-tag",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    "xabikos.javascriptsnippets",
+    "jcbuisson.vue",
+    "hollowtree.vue-snippets",
+    "dbaeumer.vscode-eslint",
+    "eg2.vscode-npm-script",
+    "christian-kohler.npm-intellisense",
+    "sibiraj-s.vscode-scss-formatter",
+    "csstools.postcss-language",
+  ]
 }
