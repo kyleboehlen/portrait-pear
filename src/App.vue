@@ -1,7 +1,9 @@
 <template>
-  <TheHeader />
-  <RouterView />
-  <TheFooter />
+  <div class="app-wrapper flex flex-col min-h-screen justify-around">
+    <TheHeader />
+    <RouterView />
+    <TheFooter />
+  </div>
 </template>
 
 <script setup>
