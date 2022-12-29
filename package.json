@@ -9,8 +9,13 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@capacitor/cli": "^4.6.1",
+    "@capacitor/core": "^4.6.1",
+    "@capacitor/ios": "^4.6.1",
+    "@capacitor/splash-screen": "^4.1.2",
     "@iconify-icons/material-symbols": "^1.2.5",
     "@iconify/vue": "^3.2.1",
+    "axios": "^0.27.2",
     "daisyui": "^2.46.0",
     "pinia": "^2.0.28",
     "vue": "^3.2.45",
