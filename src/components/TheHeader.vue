@@ -7,10 +7,16 @@
     <!-- Header proper -->
     <div
       class="w-full px-2 bg-secondary flex flex-row flex-nowrap justify-between items-center rounded-b-xl"
-      :class="{ 'h-24': !shrink, 'h-12': shrink }">
+      :class="{ 'h-28': !shrink, 'md:h-24': !shrink, 'h-12': shrink }">
       <img :src="logo" class="h-full" />
-      <h1 class="whitespace-nowrap" :class="{ 'text-6xl': !shrink, 'text-3xl': shrink }">Portrait Pear</h1>
-      <div class="btn flex h-3/4 w-auto p-0 aspect-square" :class="{ 'btn-lg': !shrink, 'btn-sm': shrink }">
+      <h1
+        class="md:whitespace-nowrap text-center"
+        :class="{ 'text-4xl': !shrink, 'sm:text-5xl': !shrink, 'md:text-6xl': !shrink, 'text-3xl': shrink }">
+        Portrait Pear
+      </h1>
+      <div
+        class="btn flex w-auto p-0 aspect-square"
+        :class="{ 'h-2/3': !shrink, 'sm:h-3/4': !shrink, 'btn-sm': shrink }">
         <Icon icon="hamburger" class="text-primary h-2/3 w-auto"></Icon>
       </div>
     </div>

@@ -1,11 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 // eslint-disable-next-line no-undef
+const defaultTheme = require("tailwindcss/defaultTheme")
+// eslint-disable-next-line no-undef
 module.exports = {
   purge: ["./index.html", "./src/**/*.{vue,js}"],
   darkMode: false, // or 'media' or 'class'
   content: [],
   theme: {
     extend: {},
+    screens: {
+      xs: "450px",
+      ...defaultTheme.screens,
+    },
   },
   daisyui: {
     themes: [
