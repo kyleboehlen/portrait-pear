@@ -17,6 +17,7 @@
     "@iconify-icons/pajamas": "^1.2.8",
     "@iconify/vue": "^3.2.1",
     "axios": "^0.27.2",
+    "capacitor-plugin-safe-area": "^1.0.0",
     "daisyui": "^2.46.0",
     "pinia": "^2.0.28",
     "vue": "^3.2.45",

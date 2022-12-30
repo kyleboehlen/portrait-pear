@@ -1,11 +1,18 @@
 <template>
-  <header
-    class="w-100 px-2 bg-secondary flex flex-row flex-nowrap justify-between items-center sticky top-0 rounded-b-xl"
-    :class="{ 'h-24': !shrink, 'h-12': shrink }">
-    <img :src="logo" class="h-full" />
-    <h1 class="whitespace-nowrap" :class="{ 'text-6xl': !shrink, 'text-3xl': shrink }">Portrait Pear</h1>
-    <div class="btn flex h-3/4 w-auto p-0 aspect-square" :class="{ 'btn-lg': !shrink, 'btn-sm': shrink }">
-      <Icon icon="hamburger" class="text-primary h-2/3 w-auto"></Icon>
+  <!-- Header proper -->
+  <header class="w-100 sticky top-0">
+    <!-- iOS safe area spacer -->
+    <div class="w-full bg-base-100" :style="{ height: safeAreaTop }"></div>
+
+    <!-- Header proper -->
+    <div
+      class="w-full px-2 bg-secondary flex flex-row flex-nowrap justify-between items-center rounded-b-xl"
+      :class="{ 'h-24': !shrink, 'h-12': shrink }">
+      <img :src="logo" class="h-full" />
+      <h1 class="whitespace-nowrap" :class="{ 'text-6xl': !shrink, 'text-3xl': shrink }">Portrait Pear</h1>
+      <div class="btn flex h-3/4 w-auto p-0 aspect-square" :class="{ 'btn-lg': !shrink, 'btn-sm': shrink }">
+        <Icon icon="hamburger" class="text-primary h-2/3 w-auto"></Icon>
+      </div>
     </div>
   </header>
 </template>
@@ -18,6 +25,9 @@ import { onMounted, ref } from "vue"
 // Iconify
 import { Icon, addIcon } from "@iconify/vue/offline"
 import hamburger from "@iconify-icons/pajamas/hamburger"
+// Capacitor
+import { Capacitor } from "@capacitor/core"
+import { SafeArea } from "capacitor-plugin-safe-area"
 
 addIcon("hamburger", hamburger)
 
@@ -29,10 +39,23 @@ const shrinkOnScroll = () => {
   } else {
     shrink.value = false
   }
-  console.log(shrink.value)
 }
+
+// Safe area for iphone
+const safeAreaTop = ref(0)
+
+// Mounted
 onMounted(() => {
+  // Mount on scroll for shrink
   window.addEventListener("scroll", shrinkOnScroll)
+
+  // Get the status bar height and add proper padding
+  if (Capacitor.getPlatform() === "ios") {
+    SafeArea.getStatusBarHeight().then(({ statusBarHeight }) => {
+      safeAreaTop.value = statusBarHeight + "px"
+      console.log(statusBarHeight, "statusbarHeight")
+    })
+  }
 })
 </script>
 
