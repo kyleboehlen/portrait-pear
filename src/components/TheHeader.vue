@@ -8,16 +8,16 @@
     <div
       class="w-full px-2 bg-secondary flex flex-row flex-nowrap justify-between items-center rounded-b-xl"
       :class="{ 'h-28': !shrink, 'md:h-24': !shrink, 'h-12': shrink }">
-      <img :src="logo" class="h-full cursor-pointer" @click="navigateHome" />
+      <img :src="logo" class="h-3/4 xs:h-full cursor-pointer" @click="navigateHome" />
       <h1
-        class="md:whitespace-nowrap text-center"
+        class="md:whitespace-nowrap text-center uppercase"
         :class="{ 'text-4xl': !shrink, 'sm:text-5xl': !shrink, 'md:text-6xl': !shrink, 'text-3xl': shrink }">
         Portrait Pear
       </h1>
       <label
         for="modal-nav"
         class="btn flex w-auto p-0 aspect-square"
-        :class="{ 'h-2/3': !shrink, 'sm:h-3/4': !shrink, 'btn-sm': shrink }">
+        :class="{ 'h-3/5': !shrink, 'sm:h-3/4': !shrink, 'btn-sm': shrink }">
         <Icon icon="hamburger" class="text-primary h-2/3 w-auto"></Icon>
       </label>
     </div>
