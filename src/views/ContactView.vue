@@ -243,7 +243,7 @@ const fullSend = () => {
 
 // On mount check if we've already sent a message
 onMounted(() => {
-  if (contact.sendNext < new Date().getTime()) {
+  if (contact.sendNext > new Date().getTime()) {
     messageSent.value = true
   }
 })
