@@ -7,7 +7,7 @@ export const useContactStore = defineStore({
   }),
   actions: {
     setSent() {
-      this.sendNext = new Date().getTime() + 3600
+      this.sendNext = new Date().getTime() + 3600000 // One hour in miliseconds
     },
   },
   persist: true,
