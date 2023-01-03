@@ -1,7 +1,14 @@
 <template>
   <div class="app-wrapper flex flex-col min-h-screen justify-start">
     <TheHeader />
-    <RouterView class="grow" />
+
+    <router-view v-slot="{ Component }">
+      <transition name="fade">
+        <component :is="Component" class="grow" />
+      </transition>
+    </router-view>
+
+    <!-- <RouterView class="grow" /> -->
     <TheFooter class="justify-self-end" />
   </div>
 </template>
@@ -22,3 +29,19 @@ onMounted(() => {
   }, 750)
 })
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-active {
+  transition-delay: 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
