@@ -4,7 +4,7 @@
     <button class="btn btn-outline btn-primary">
       Shutter <Icon icon="camera" class="ml-4" height="30" width="30"></Icon>
     </button>
-    <TheFavoritesButton v-if="showFavoritesButton" />
+    <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="props.shoot_slug" />
   </main>
 </template>
 
@@ -19,7 +19,7 @@ import { Capacitor } from "@capacitor/core"
 // Vue
 import { onMounted, computed } from "vue"
 // Components
-import TheFavoritesButton from "@/TheFavoritesButton.vue"
+import TheFavoritesButton from "@/components/TheFavoritesButton.vue"
 
 addIcon("camera", camera)
 

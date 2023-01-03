@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import HomeView from "@/views/HomeView.vue"
+import ShootView from "@/views/ShootView.vue"
 import ContactView from "@/views/ContactView.vue"
 import FavoritesView from "@/views/FavoritesView.vue"
 
@@ -24,7 +25,7 @@ const router = createRouter({
     {
       path: "/:shoot_slug",
       name: "shoot",
-      component: HomeView,
+      component: ShootView,
       props: true,
     },
   ],
