@@ -107,24 +107,24 @@ const setHomePhotos = () => {
   }
 }
 
+const apiUrl = import.meta.env.VITE_API_URL
 const refreshHomePhotos = () => {
   isOnline.value = true
-  // Get from cache if we're native and we have updated in the past 30 minutes
-  if (Capacitor.isNativePlatform() && Date.now() - home.lastUpdated < 1800000) {
+  // Get from cache if we have updated in the past 30 minutes
+  if (Date.now() - home.lastUpdated < 1800000) {
     // Get from cache
     photos.value = home.photos
     apiCallFinished.value = true
   } else {
     axios({
       method: "get",
-      url: `http://localhost/api/pear/home`,
+      url: `${apiUrl}/api/pear/home`,
     })
       .then(function (response) {
-        // Cache on native
-        if (Capacitor.isNativePlatform()) {
-          home.photos = response.data.photos
-          home.setLastUpdated()
-        }
+        // Cache
+        home.photos = response.data.photos
+        home.setLastUpdated()
+
         // Set photos
         photos.value = response.data.photos
         apiCallFinished.value = true

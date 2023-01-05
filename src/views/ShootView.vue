@@ -55,10 +55,11 @@ const showFavoritesButton = computed(() => {
 
 const photos = ref(null)
 
+const apiUrl = import.meta.env.VITE_API_URL
 onMounted(() => {
   axios({
     method: "get",
-    url: `http://localhost/api/pear/shoot/${shootSlug.value}`,
+    url: `${apiUrl}/api/pear/shoot/${shootSlug.value}`,
   })
     .then(function (response) {
       // console.log(response.data)
