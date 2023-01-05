@@ -1,9 +1,18 @@
 <template>
-  <main>
-    <p v-for="i in 100" :key="i">{{ isShoot }}</p>
-    <button class="btn btn-outline btn-primary">
-      Shutter <Icon icon="camera" class="ml-4" height="30" width="30"></Icon>
-    </button>
+  <main class="flex">
+    <!-- Shoot not found :( -->
+    <Transition name="fade">
+      <NotFoundMessage v-if="apiCallFinished && !shootFound" msg="No shoot found :(" class="w-full" />
+    </Transition>
+
+    <!-- The photos, yay -->
+    <Transition name="fade">
+      <div v-if="isShoot" class="w-full flex flex-wrap items-center justify-around">
+        <PhotoCard v-for="photo in photos" :key="photo.id" :photo="photo" />
+      </div>
+    </Transition>
+
+    <!-- Favorites button -->
     <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="props.shoot_slug" />
   </main>
 </template>
@@ -17,9 +26,11 @@ import camera from "@iconify-icons/material-symbols/camera"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
 // Vue
-import { onMounted, computed } from "vue"
+import { onMounted, computed, ref } from "vue"
 // Components
 import TheFavoritesButton from "@/components/TheFavoritesButton.vue"
+import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
+import PhotoCard from "@/components/panel/PhotoCard.vue"
 
 addIcon("camera", camera)
 
@@ -32,13 +43,17 @@ const shootSlug = computed(() => {
   return props.shoot_slug.toUpperCase()
 })
 
+const shootFound = ref(false)
+const apiCallFinished = ref(false)
 const isShoot = computed(() => {
-  return shootSlug.value !== null // and we get a valid shoot from the api, not a 404
+  return shootSlug.value !== null && apiCallFinished.value && shootFound.value
 })
 
 const showFavoritesButton = computed(() => {
   return isShoot.value && Capacitor.isNativePlatform()
 })
+
+const photos = ref(null)
 
 onMounted(() => {
   axios({
@@ -46,10 +61,32 @@ onMounted(() => {
     url: `http://localhost/api/pear/shoot/${shootSlug.value}`,
   })
     .then(function (response) {
-      console.log(response.data)
+      // console.log(response.data)
+      // TODO: update cache if favorited?
+      apiCallFinished.value = true
+      shootFound.value = true
+      photos.value = response.data.photos
     })
     .catch(function () {
-      console.log("failed")
+      // console.log("failed")
+      apiCallFinished.value = true
+      shootFound.value = false
     })
 })
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-active {
+  transition-delay: 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

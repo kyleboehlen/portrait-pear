@@ -11,10 +11,7 @@
         </a>
       </li>
     </ul>
-    <div v-else class="flex flex-col justify-center items-center">
-      <Icon icon="shutter" class="h-48 w-auto" />
-      <p class="text-3xl mt-4">No Shoots Favorited</p>
-    </div>
+    <NotFoundMessage msg="No Shoots Favorited :(" />
   </main>
 </template>
 
@@ -26,6 +23,8 @@ import { Icon, addIcon } from "@iconify/vue/offline"
 import shutter from "@iconify-icons/material-symbols/camera"
 // Store
 import { useFavoritesStore } from "@/stores/favorites.js"
+// Components
+import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 
 const favorites = useFavoritesStore()
 
