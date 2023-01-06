@@ -8,7 +8,7 @@
     <!-- The photos, yay -->
     <Transition name="fade">
       <div v-if="isShoot" class="w-full flex flex-wrap items-center justify-around">
-        <PhotoCard v-for="photo in photos" :key="photo.id" :photo="photo" />
+        <PhotoCard v-for="photo in filteredPhotos" :key="photo.id" :photo="photo" />
       </div>
     </Transition>
 
@@ -20,9 +20,6 @@
 <script setup>
 // Axios
 import axios from "axios"
-// Icons
-import { Icon, addIcon } from "@iconify/vue/offline"
-import camera from "@iconify-icons/material-symbols/camera"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
 // Vue
@@ -31,8 +28,8 @@ import { onMounted, computed, ref } from "vue"
 import TheFavoritesButton from "@/components/TheFavoritesButton.vue"
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 import PhotoCard from "@/components/panel/PhotoCard.vue"
-
-addIcon("camera", camera)
+// Store
+import { useFilterStore } from "@/stores/filter.js"
 
 const props = defineProps(["shoot_slug"])
 
@@ -54,6 +51,13 @@ const showFavoritesButton = computed(() => {
 })
 
 const photos = ref(null)
+const filter = useFilterStore()
+const filteredPhotos = computed(() => {
+  if (filter.category > 0) {
+    return photos.value.filter((p) => p.categories_array.includes(filter.category))
+  }
+  return photos.value
+})
 
 const apiUrl = import.meta.env.VITE_API_URL
 onMounted(() => {

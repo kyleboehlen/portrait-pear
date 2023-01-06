@@ -34,7 +34,11 @@ const img = ref()
 const isOnline = ref(false)
 
 const isCached = computed(() => {
-  return props.cachedPhotos.includes(props.photo.compressed_asset_url)
+  if (props.cachedPhotos !== undefined) {
+    return props.cachedPhotos.includes(props.photo.compressed_asset_url)
+  }
+
+  return false
 })
 
 const useCached = computed(() => {
