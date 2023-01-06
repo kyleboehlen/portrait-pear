@@ -8,7 +8,10 @@
           <span class="label-text">Filter Photos</span>
         </label>
         <div class="input-group w-full">
-          <select id="filter-select" class="select select-bordered select-primary w-10/12 focus:outline-none">
+          <select
+            v-model="filterSelect"
+            id="filter-select"
+            class="select select-bordered select-primary w-10/12 focus:outline-none">
             <option value="0">Show All</option>
             <option value="1">Portrait</option>
             <option value="2">Automotive</option>
@@ -16,7 +19,7 @@
             <option value="4">B&W</option>
           </select>
           <button class="btn max-xs:btn-square" @click="filterPhotos">
-            <Icon icon="filter" class="text-primary h-2/3 w-auto"></Icon>
+            <Icon icon="funnel" class="text-primary h-2/3 w-auto"></Icon>
           </button>
         </div>
       </div>
@@ -65,12 +68,14 @@
 
 <script setup>
 // Vue
-import { computed, ref } from "vue"
+import { computed, ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 // Components
 import BottomButton from "@/components/nav/BottomButton.vue"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
+// Store
+import { useFilterStore } from "@/stores/filter.js"
 // Icons
 import { Icon, addIcon } from "@iconify/vue/offline"
 import home from "@iconify-icons/pajamas/home"
@@ -78,7 +83,7 @@ import search from "@iconify-icons/pajamas/search-sm"
 import mail from "@iconify-icons/pajamas/mail"
 import insta from "@iconify-icons/mdi/instagram"
 import app from "@iconify-icons/ph/app-store-logo-bold"
-import filter from "@iconify-icons/pajamas/filter"
+import funnel from "@iconify-icons/pajamas/filter"
 import heart from "@iconify-icons/pajamas/heart"
 
 addIcon("home", home)
@@ -86,17 +91,23 @@ addIcon("search", search)
 addIcon("mail", mail)
 addIcon("insta", insta)
 addIcon("app", app)
-addIcon("filter", filter)
+addIcon("funnel", funnel)
 addIcon("heart", heart)
 
 const isNative = computed(() => {
   return Capacitor.isNativePlatform()
 })
 
+const filter = useFilterStore()
+const filterSelect = ref()
 const filterPhotos = () => {
-  console.log("Todo: update home store")
+  filter.setCategory(filterSelect.value)
   hideModal()
 }
+
+onMounted(() => {
+  filterSelect.value = filter.category
+})
 
 const modalToggle = ref()
 

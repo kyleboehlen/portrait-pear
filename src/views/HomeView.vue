@@ -41,6 +41,7 @@ import PhotoCard from "@/components/panel/PhotoCard.vue"
 // Store
 import { useHomeStore } from "@/stores/home.js"
 import { useImagesStore } from "@/stores/images.js"
+import { useFilterStore } from "@/stores/filter.js"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
 
@@ -64,13 +65,26 @@ const notFoundMsg = computed(() => {
 // Photo refs
 const photos = ref([])
 const cachedPhotos = ref([])
+
+// Filtering
+const filter = useFilterStore()
 const filteredPhotos = computed(() => {
+  let returnPhotos = []
+
+  // Filter to cached
   if (Capacitor.isNativePlatform() && !isOnline.value) {
     // Check cache
-    return photos.value.filter((p) => cachedPhotos.value.includes(p.compressed_asset_url))
+    returnPhotos = photos.value.filter((p) => cachedPhotos.value.includes(p.compressed_asset_url))
+  } else {
+    returnPhotos = photos.value
   }
-  // TODO: add filter logic - filter store
-  return photos.value
+
+  // Filter by category
+  if (filter.category > 0) {
+    returnPhotos = returnPhotos.filter((p) => p.categories_array.includes(filter.category))
+  }
+
+  return returnPhotos
 })
 
 onMounted(() => {

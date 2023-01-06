@@ -42,7 +42,6 @@ const useCached = computed(() => {
 })
 
 const crossorigin = computed(() => {
-  console.log(Capacitor.isNativePlatform() && !isCached.value)
   if (Capacitor.isNativePlatform() && !isCached.value) {
     return true
   }
