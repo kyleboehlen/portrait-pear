@@ -14,6 +14,7 @@
     "@capacitor/cli": "^4.6.1",
     "@capacitor/core": "^4.6.1",
     "@capacitor/ios": "^4.6.1",
+    "@capacitor/preferences": "^4.0.2",
     "@capacitor/splash-screen": "^4.1.2",
     "@iconify-icons/iconoir": "^1.2.15",
     "@iconify-icons/material-symbols": "^1.2.5",

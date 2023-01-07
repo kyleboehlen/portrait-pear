@@ -57,7 +57,7 @@
 
 <script setup>
 // Vue
-import { computed, ref } from "vue"
+import { computed, ref, onMounted } from "vue"
 // Icons
 import { Icon, addIcon } from "@iconify/vue/offline"
 import heart from "@iconify-icons/mdi/cards-heart-outline"
@@ -108,4 +108,8 @@ const removeFavorite = () => {
   favorites.removeShoot(props.shootSlug)
   showRemoveModal.value = false
 }
+
+onMounted(() => {
+  favorites.loadFromUserDefaults()
+})
 </script>

@@ -13,7 +13,7 @@
     </Transition>
 
     <!-- Favorites button -->
-    <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="props.shoot_slug" />
+    <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="shootSlug" />
   </main>
 </template>
 
@@ -23,7 +23,7 @@ import axios from "axios"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
 // Vue
-import { onMounted, computed, ref } from "vue"
+import { onMounted, computed, ref, watch } from "vue"
 // Components
 import TheFavoritesButton from "@/components/TheFavoritesButton.vue"
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
@@ -60,23 +60,33 @@ const filteredPhotos = computed(() => {
 })
 
 const apiUrl = import.meta.env.VITE_API_URL
-onMounted(() => {
+const getShootFromAPI = () => {
+  apiCallFinished.value = false
+  shootFound.value = false
   axios({
     method: "get",
     url: `${apiUrl}/api/pear/shoot/${shootSlug.value}`,
   })
     .then(function (response) {
-      // console.log(response.data)
-      // TODO: update cache if favorited?
+      // TODO: update cache if favorited
       apiCallFinished.value = true
       shootFound.value = true
       photos.value = response.data.photos
+      console.log(shootSlug.value, "shootSlug")
+      console.log(isShoot.value, "isShoot")
+      console.log(showFavoritesButton.value, "showFavoritesButton")
     })
     .catch(function () {
-      // console.log("failed")
       apiCallFinished.value = true
       shootFound.value = false
     })
+}
+
+onMounted(getShootFromAPI)
+
+watch(props, async () => {
+  window.scrollTo(0, 0)
+  getShootFromAPI()
 })
 </script>
 

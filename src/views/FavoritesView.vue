@@ -11,12 +11,13 @@
         </a>
       </li>
     </ul>
-    <NotFoundMessage msg="No Shoots Favorited :(" />
+    <NotFoundMessage v-if="favorites.shoots.length === 0" msg="No Shoots Favorited :(" />
   </main>
 </template>
 
 <script setup>
 // Vue
+import { onMounted } from "vue"
 import { useRouter } from "vue-router"
 // Icons
 import { Icon, addIcon } from "@iconify/vue/offline"
@@ -34,4 +35,8 @@ const router = useRouter()
 const navigate = (slug) => {
   router.push({ name: "shoot", params: { shoot_slug: slug.toUpperCase() } })
 }
+
+onMounted(() => {
+  favorites.loadFromUserDefaults()
+})
 </script>

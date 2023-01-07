@@ -1,22 +1,46 @@
 import { defineStore } from "pinia"
+// Vue
+import { ref } from "vue"
+// Capacitor
+import { Preferences } from "@capacitor/preferences"
+import { Capacitor } from "@capacitor/core"
 
-export const useFavoritesStore = defineStore({
-  id: "favorites",
-  state: () => ({
-    shoots: [],
-  }),
-  actions: {
-    addShoot(slug, name) {
-      this.shoots.push({
-        slug: slug,
-        name: name,
+export const useFavoritesStore = defineStore("favorites", () => {
+  const shoots = ref([])
+
+  const addShoot = (slug, name) => {
+    shoots.value.push({
+      slug: slug,
+      name: name,
+    })
+    persistToUserDefaults()
+  }
+
+  const removeShoot = (slug) => {
+    shoots.value = shoots.value.filter((shoot) => {
+      return shoot.slug !== slug
+    })
+    persistToUserDefaults()
+  }
+
+  const persistToUserDefaults = async () => {
+    if (Capacitor.isNativePlatform()) {
+      const shootsJson = JSON.stringify(shoots.value)
+      await Preferences.set({
+        key: "favoriteShoots",
+        value: shootsJson,
       })
-    },
-    removeShoot(slug) {
-      this.shoots = this.shoots.filter((shoot) => {
-        return shoot.slug !== slug
-      })
-    },
-  },
-  persist: true,
+    }
+  }
+
+  const loadFromUserDefaults = async () => {
+    if (Capacitor.isNativePlatform()) {
+      const { value } = await Preferences.get({ key: "favoriteShoots" })
+      if (value !== null) {
+        shoots.value = JSON.parse(value)
+      }
+    }
+  }
+
+  return { shoots, addShoot, removeShoot, loadFromUserDefaults }
 })
