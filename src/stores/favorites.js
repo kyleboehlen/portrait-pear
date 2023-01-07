@@ -8,10 +8,11 @@ import { Capacitor } from "@capacitor/core"
 export const useFavoritesStore = defineStore("favorites", () => {
   const shoots = ref([])
 
-  const addShoot = (slug, name) => {
+  const addShoot = (slug, name, photos) => {
     shoots.value.push({
       slug: slug,
       name: name,
+      photos: photos,
     })
     persistToUserDefaults()
   }

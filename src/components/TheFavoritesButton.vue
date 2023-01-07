@@ -112,7 +112,7 @@ const saveFavorite = () => {
   if (shootName.value === undefined || shootName.value.length === 0) {
     shootNameValid.value = false
   } else {
-    favorites.addShoot(props.shootSlug, shootName.value)
+    favorites.addShoot(props.shootSlug, shootName.value, props.photos)
     showAddModal.value = false
     saveImages()
   }
@@ -150,18 +150,22 @@ const saveImages = async () => {
 
   const allAssetURLs = await images.getAll()
 
-  console.log(numToSave.value, "numToSave")
-  console.log(numSaved.value, "numSaved")
-  console.log(allAssetURLs, "allAsssetUrls")
-
   await props.photos.forEach(async (photo) => {
     if (!allAssetURLs.includes(photo.compressed_asset_url)) {
       await saveImage(photo.compressed_asset_url)
+    } else {
+      numSaved.value++
     }
     if (!allAssetURLs.includes(photo.full_res_asset_url)) {
       await saveImage(photo.full_res_asset_url)
+    } else {
+      numSaved.value++
     }
   })
+
+  if (numSaved.value === numToSave.value) {
+    showSavingModal.value = false
+  }
 }
 const saveImage = async (src) => {
   var img = new Image()

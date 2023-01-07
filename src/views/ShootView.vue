@@ -2,7 +2,7 @@
   <main class="flex">
     <!-- Shoot not found :( -->
     <Transition name="fade">
-      <NotFoundMessage v-if="apiCallFinished && !shootFound" msg="No shoot found :(" class="w-full" />
+      <NotFoundMessage v-if="apiCallFinished && !shootFound" :msg="notFoundMsg" class="w-full" />
     </Transition>
 
     <!-- The photos, yay -->
@@ -30,6 +30,7 @@ import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 import PhotoCard from "@/components/panel/PhotoCard.vue"
 // Store
 import { useFilterStore } from "@/stores/filter.js"
+import { useFavoritesStore } from "@/stores/favorites.js"
 
 const props = defineProps(["shoot_slug"])
 
@@ -60,30 +61,61 @@ const filteredPhotos = computed(() => {
 })
 
 const apiUrl = import.meta.env.VITE_API_URL
-const getShootFromAPI = () => {
+const notFoundMsg = ref("")
+const favorites = useFavoritesStore()
+const getShootFromAPI = async () => {
   apiCallFinished.value = false
   shootFound.value = false
-  axios({
-    method: "get",
-    url: `${apiUrl}/api/pear/shoot/${shootSlug.value}`,
-  })
-    .then(function (response) {
-      // TODO: update cache if favorited
-      apiCallFinished.value = true
-      shootFound.value = true
-      photos.value = response.data.photos
-      console.log(shootSlug.value, "shootSlug")
-      console.log(isShoot.value, "isShoot")
-      console.log(showFavoritesButton.value, "showFavoritesButton")
-    })
-    .catch(function () {
+  notFoundMsg.value = "No shoot found :("
+
+  console.log("getting from api")
+
+  if (Capacitor.isNativePlatform() && !navigator.onLine) {
+    // Load favorites from cache
+    await favorites.loadFromUserDefaults()
+    const shootIndex = favorites.shoots.findIndex((s) => s.slug === shootSlug.value)
+    if (shootIndex < 0) {
       apiCallFinished.value = true
       shootFound.value = false
+      notFoundMsg.value = "Go online to load shoot :)"
+    } else {
+      apiCallFinished.value = true
+      shootFound.value = true
+      photos.value = favorites.shoots[shootIndex].photos
+    }
+  } else if (!navigator.onLine) {
+    apiCallFinished.value = true
+    shootFound.value = false
+    notFoundMsg.value = "Go online to load shoot :)"
+  } else {
+    axios({
+      method: "get",
+      url: `${apiUrl}/api/pear/shoot/${shootSlug.value}`,
     })
+      .then(function (response) {
+        // TODO: update cache if favorited
+        apiCallFinished.value = true
+        shootFound.value = true
+        photos.value = response.data.photos
+      })
+      .catch(function () {
+        apiCallFinished.value = true
+        shootFound.value = false
+      })
+  }
 }
 
-onMounted(getShootFromAPI)
+onMounted(() => {
+  // Set online listener - regardless if online
+  if (Capacitor.isNativePlatform()) {
+    window.addEventListener("online", getShootFromAPI) // Bind to online event
+  }
 
+  // Load shoot
+  getShootFromAPI()
+})
+
+// Update when we get a new shoot slug
 watch(props, async () => {
   window.scrollTo(0, 0)
   getShootFromAPI()
