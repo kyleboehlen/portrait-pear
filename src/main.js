@@ -25,7 +25,7 @@ app.use(VueLazyLoad)
 Capp.addListener("appUrlOpen", function (event) {
   // Example url: https://www.portraitpear.photography/HEYYOU
   // slug = /HEYYOU
-  const slug = event.url.split(".app").pop()
+  const slug = event.url.split(".photography").pop()
 
   // We only push to the route if there is a slug present
   if (slug) {
