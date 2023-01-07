@@ -13,7 +13,7 @@
     </Transition>
 
     <!-- Favorites button -->
-    <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="shootSlug" />
+    <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="shootSlug" :photos="photos" />
   </main>
 </template>
 

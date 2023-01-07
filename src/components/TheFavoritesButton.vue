@@ -37,6 +37,17 @@
     </div>
   </div>
 
+  <!--  -->
+  <Teleport to="body">
+    <div
+      v-if="showSavingModal"
+      class="radial-progress bg-primary text-primary-content fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+      style="--size: 12rem; --thickness: 1rem"
+      :style="{ '--value': savePercentage }">
+      <span class="!text-4xl">{{ savePercentage }}%</span>
+    </div>
+  </Teleport>
+
   <!-- Remove Favorite modal -->
   <input type="checkbox" id="remove-modal" class="modal-toggle" />
   <div id="remove-modal" class="modal" :class="{ 'modal-open': showRemoveModal }" @click.self="showAddModal = false">
@@ -64,13 +75,14 @@ import heart from "@iconify-icons/mdi/cards-heart-outline"
 import heartFilled from "@iconify-icons/mdi/cards-heart"
 // Store
 import { useFavoritesStore } from "@/stores/favorites.js"
+import { useImagesStore } from "@/stores/images.js"
 
 const favorites = useFavoritesStore()
 
 addIcon("heart", heart)
 addIcon("heartFilled", heartFilled)
 
-const props = defineProps(["shootSlug"])
+const props = defineProps(["shootSlug", "photos"])
 
 const isFavorited = computed(() => {
   const favorite = favorites.shoots.find((shoot) => {
@@ -82,6 +94,7 @@ const isFavorited = computed(() => {
 
 const showAddModal = ref(false)
 const showRemoveModal = ref(false)
+const showSavingModal = ref(false)
 const shootName = ref()
 const shootNameValid = ref(true)
 
@@ -101,6 +114,7 @@ const saveFavorite = () => {
   } else {
     favorites.addShoot(props.shootSlug, shootName.value)
     showAddModal.value = false
+    saveImages()
   }
 }
 
@@ -112,4 +126,60 @@ const removeFavorite = () => {
 onMounted(() => {
   favorites.loadFromUserDefaults()
 })
+
+// Saving
+const numToSave = computed(() => {
+  if (props.photos === undefined || props.photos === null) {
+    return 0
+  }
+  return props.photos.length * 2
+})
+
+const numSaved = ref(0)
+const savePercentage = computed(() => {
+  if (numToSave.value == 0 || numSaved.value == 0) {
+    return 0
+  }
+  return Math.round((numSaved.value / numToSave.value) * 100)
+})
+
+// Caching images on favoriting of shoot
+const images = useImagesStore()
+const saveImages = async () => {
+  showSavingModal.value = true
+
+  const allAssetURLs = await images.getAll()
+
+  console.log(numToSave.value, "numToSave")
+  console.log(numSaved.value, "numSaved")
+  console.log(allAssetURLs, "allAsssetUrls")
+
+  await props.photos.forEach(async (photo) => {
+    if (!allAssetURLs.includes(photo.compressed_asset_url)) {
+      await saveImage(photo.compressed_asset_url)
+    }
+    if (!allAssetURLs.includes(photo.full_res_asset_url)) {
+      await saveImage(photo.full_res_asset_url)
+    }
+  })
+}
+const saveImage = async (src) => {
+  var img = new Image()
+  img.crossOrigin = "anonymous"
+  img.onload = async function () {
+    var canvas = document.createElement("CANVAS")
+    var ctx = canvas.getContext("2d")
+    var dataURL
+    canvas.height = this.naturalHeight
+    canvas.width = this.naturalWidth
+    ctx.drawImage(this, 0, 0)
+    dataURL = canvas.toDataURL("image/jpeg")
+    await images.store(src, dataURL)
+    numSaved.value++
+    if (numSaved.value === numToSave.value) {
+      showSavingModal.value = false
+    }
+  }
+  img.src = src
+}
 </script>
