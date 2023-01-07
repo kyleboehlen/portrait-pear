@@ -1,22 +1,14 @@
 <template>
   <main class="flex">
-    <!-- Metrenome pear loader -->
-    <Transition name="fade">
-      <TheLoader v-if="!loaderTimeout || !apiCallFinished" class="grow" />
-    </Transition>
-
     <!-- No images found message -->
     <Transition name="fade">
-      <NotFoundMessage
-        v-if="loaderTimeout && apiCallFinished && filteredPhotos.length == 0"
-        :msg="notFoundMsg"
-        class="w-full" />
+      <NotFoundMessage v-if="apiCallFinished && filteredPhotos.length == 0" :msg="notFoundMsg" class="w-full" />
     </Transition>
 
     <!-- Actually show images! -->
     <Transition name="fade">
       <div
-        v-if="loaderTimeout && apiCallFinished && filteredPhotos.length > 0"
+        v-if="apiCallFinished && filteredPhotos.length > 0"
         class="w-full flex flex-wrap items-center justify-around">
         <PhotoCard
           v-for="photo in filteredPhotos"
@@ -35,7 +27,6 @@ import axios from "axios"
 // Vue
 import { onMounted, ref, computed } from "vue"
 // Components
-import TheLoader from "@/components/TheLoader.vue"
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 import PhotoCard from "@/components/panel/PhotoCard.vue"
 // Store
@@ -49,7 +40,6 @@ const home = useHomeStore()
 const images = useImagesStore()
 
 // Show loader logic
-const loaderTimeout = ref(false)
 const apiCallFinished = ref(false)
 const isOnline = ref(false)
 
@@ -88,11 +78,6 @@ const filteredPhotos = computed(() => {
 })
 
 onMounted(() => {
-  // Show timeout for a moment on mount cuz it's cute
-  setTimeout(() => {
-    loaderTimeout.value = true
-  }, 500)
-
   // Set cached images if we're native
   if (Capacitor.isNativePlatform()) {
     setCachedImages().then(() => {
