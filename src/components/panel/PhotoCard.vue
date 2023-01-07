@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex justify-center bg-secondary/50 max-xs:w-full max-sm:w-3/4 sm:h-96 border-2 rounded-lg border-secondary m-4">
+    class="flex justify-center bg-secondary/50 max-xs:w-full max-sm:w-3/4 sm:h-96 border-1 shadow-md shadow-secondary rounded-lg border-secondary m-4">
     <!-- If not cached show lazy load, otherwise paint it from cache -->
     <img
       v-if="crossorigin"
@@ -92,5 +92,5 @@ const lazyLifecycle = {
   loaded: onLoad,
 }
 
-const imgClasses = "max-w-full max-h-full m-auto mx-2 sm:mx-4 my-0 sm:my-2 object-contain rounded-lg"
+const imgClasses = "max-w-full max-h-full object-contain rounded-lg"
 </script>
