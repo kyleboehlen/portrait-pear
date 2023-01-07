@@ -93,15 +93,25 @@ const getShootFromAPI = async () => {
       url: `${apiUrl}/api/pear/shoot/${shootSlug.value}`,
     })
       .then(function (response) {
-        // TODO: update cache if favorited
         apiCallFinished.value = true
         shootFound.value = true
         photos.value = response.data.photos
+        // Update cache if favorited
+        updateFavoritedShoot(photos.value)
       })
       .catch(function () {
         apiCallFinished.value = true
         shootFound.value = false
       })
+  }
+}
+
+const updateFavoritedShoot = async (photos) => {
+  await favorites.loadFromUserDefaults()
+  const shootIndex = favorites.shoots.findIndex((s) => s.slug === shootSlug.value)
+  if (shootIndex >= 0) {
+    favorites.shoots[shootIndex].photos = photos
+    favorites.persistToUserDefaults()
   }
 }
 

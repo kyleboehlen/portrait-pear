@@ -43,5 +43,5 @@ export const useFavoritesStore = defineStore("favorites", () => {
     }
   }
 
-  return { shoots, addShoot, removeShoot, loadFromUserDefaults }
+  return { shoots, addShoot, removeShoot, loadFromUserDefaults, persistToUserDefaults }
 })
