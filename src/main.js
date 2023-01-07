@@ -2,6 +2,7 @@ import { createApp } from "vue"
 import { createPinia } from "pinia"
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate"
 import { Capacitor } from "@capacitor/core"
+import { App as Capp } from "@capacitor/app"
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite"
 
 import App from "./App.vue"
@@ -19,6 +20,20 @@ app.use(pinia)
 app.use(router)
 app.use(VueClickAway) // Makes 'v-click-away' directive usable in every component
 app.use(VueLazyLoad)
+
+// Deep links
+Capp.addListener("appUrlOpen", function (event) {
+  // Example url: https://www.portraitpear.photography/HEYYOU
+  // slug = /HEYYOU
+  const slug = event.url.split(".app").pop()
+
+  // We only push to the route if there is a slug present
+  if (slug) {
+    router.push({
+      path: slug,
+    })
+  }
+})
 
 async function setUpDatabase() {
   const sqlite = new SQLiteConnection(CapacitorSQLite)
