@@ -12,12 +12,22 @@
         class="w-full flex flex-wrap items-center justify-around">
         <PhotoCard
           v-for="photo in filteredPhotos"
+          class="hover:cursor-zoom-in"
           :key="photo.id"
           :photo="photo"
           :cachedPhotos="cachedPhotos"
-          cache="true" />
+          cache="true"
+          @click="fullsizeImage(photo)" />
       </div>
     </Transition>
+
+    <!-- Full size viewer -->
+    <TheFullsizeViewer
+      v-if="showFullsize"
+      class="modal-open"
+      :photo="fullsizePhoto"
+      :photos="filteredPhotos"
+      @close="showFullsize = false" />
   </main>
 </template>
 
@@ -29,6 +39,7 @@ import { onMounted, ref, computed } from "vue"
 // Components
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 import PhotoCard from "@/components/panel/PhotoCard.vue"
+import TheFullsizeViewer from "@/components/TheFullsizeViewer.vue"
 // Store
 import { useHomeStore } from "@/stores/home.js"
 import { useImagesStore } from "@/stores/images.js"
@@ -139,6 +150,14 @@ async function setCachedImages() {
   images.getAll().then((values) => {
     cachedPhotos.value = values
   })
+}
+
+// Fullsize viewer
+const showFullsize = ref(false)
+const fullsizePhoto = ref(null)
+const fullsizeImage = (photo) => {
+  fullsizePhoto.value = photo
+  showFullsize.value = true
 }
 </script>
 
