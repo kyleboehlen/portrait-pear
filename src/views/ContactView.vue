@@ -88,7 +88,7 @@
       </div>
 
       <!-- BUTTON -->
-      <div class="w-full flex justify-center sm:justify-end mt-8">
+      <div class="w-full flex justify-center sm:justify-end mt-8 max-md:pb-4">
         <button class="btn btn-outline btn-success px-16 sm:px-8" @click="fullSend" :disabled="messageSending">
           {{ buttonText }}
         </button>
