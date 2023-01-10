@@ -143,6 +143,9 @@ const refreshHomePhotos = () => {
         apiCallFinished.value = true
       })
   }
+
+  // Set cached
+  setCachedImages()
 }
 
 async function setCachedImages() {

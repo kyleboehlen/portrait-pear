@@ -13,7 +13,11 @@
     </Transition>
 
     <!-- Favorites button -->
-    <TheFavoritesButton v-if="showFavoritesButton" :shootSlug="shootSlug" :photos="photos" />
+    <TheFavoritesButton
+      v-if="showFavoritesButton"
+      :shootSlug="shootSlug"
+      :photos="photos"
+      @refreshCache="loadCachedImages" />
   </main>
 </template>
 
@@ -77,9 +81,7 @@ const getShootFromAPI = async () => {
 
   // Load cache if native
   if (Capacitor.isNativePlatform()) {
-    images.getAll().then((values) => {
-      cachedPhotos.value = values
-    })
+    loadCachedImages()
   }
 
   if (Capacitor.isNativePlatform() && !navigator.onLine) {
@@ -142,6 +144,13 @@ watch(props, async () => {
   window.scrollTo(0, 0)
   getShootFromAPI()
 })
+
+const loadCachedImages = () => {
+  // Load cache if native
+  images.getAll().then((values) => {
+    cachedPhotos.value = values
+  })
+}
 </script>
 
 <style scoped>

@@ -83,6 +83,7 @@ addIcon("heart", heart)
 addIcon("heartFilled", heartFilled)
 
 const props = defineProps(["shootSlug", "photos"])
+const emit = defineEmits(["refreshCache"])
 
 const isFavorited = computed(() => {
   const favorite = favorites.shoots.find((shoot) => {
@@ -165,6 +166,7 @@ const saveImages = async () => {
 
   if (numSaved.value === numToSave.value) {
     showSavingModal.value = false
+    emit("refreshCache")
   }
 }
 const saveImage = async (src) => {
@@ -182,6 +184,7 @@ const saveImage = async (src) => {
     numSaved.value++
     if (numSaved.value === numToSave.value) {
       showSavingModal.value = false
+      emit("refreshCache")
     }
   }
   img.src = src
