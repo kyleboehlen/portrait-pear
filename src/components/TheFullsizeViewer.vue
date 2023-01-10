@@ -4,9 +4,10 @@
       <!-- Actions bar -->
       <div class="flex justify-between items-center w-auto px-0 sm:px-4">
         <!-- Download -->
-        <button class="btn btn-sm xs:btn-md sm:btn-lg">
+        <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="downloadImage">
           <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
         </button>
+
         <!-- Toggle back/forth -->
         <div class="flex justify-center items-center">
           <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="goLeft">
@@ -19,6 +20,7 @@
             <Icon icon="right" class="h-4/6 w-auto px-0 sm:px-1" />
           </button>
         </div>
+
         <!-- Close -->
         <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="$emit('close')">
           <Icon icon="close" class="h-4/6 w-auto" />
@@ -26,7 +28,10 @@
       </div>
 
       <!-- Image container -->
-      <div class="w-auto h-5/6 flex justify-center items-center shrink m-1 grow">
+      <div
+        class="w-auto h-5/6 flex justify-center items-center shrink m-1 grow"
+        @touchstart="touchStart($event)"
+        @touchend="touchEnd($event)">
         <img :src="photo?.full_res_asset_url" class="object-contain max-h-full rounded-lg" />
       </div>
     </div>
@@ -73,6 +78,7 @@ const downloadImage = () => {
   console.log("TODO")
 }
 const goLeft = () => {
+  // console.log(event.isFinal)
   if (photoIndex.value <= 1) {
     photo.value = props.photos[props.photos.length - 1]
   } else {
@@ -85,5 +91,27 @@ const goRight = () => {
   } else {
     photo.value = props.photos[photoIndex.value]
   }
+}
+
+// Swipe
+let touchstartX = 0
+let touchendX = 0
+function checkSwipe() {
+  if (Math.abs(touchstartX - touchendX) > window.innerWidth / 4) {
+    if (touchendX < touchstartX) {
+      console.log(touchendX - touchstartX)
+      goLeft()
+    }
+    if (touchendX > touchstartX) {
+      goRight()
+    }
+  }
+}
+const touchStart = (e) => {
+  touchstartX = e.changedTouches[0].screenX
+}
+const touchEnd = (e) => {
+  touchendX = e.changedTouches[0].screenX
+  checkSwipe()
 }
 </script>
