@@ -1,6 +1,8 @@
 <template>
   <div class="modal w-screen h-screen">
-    <div class="bg-base-100 grow w-screen h-screen flex flex-col-reverse sm:flex-col justify-center p-2 flex-nowrap">
+    <div
+      class="bg-base-100 grow w-screen h-screen flex justify-center p-2 flex-nowrap"
+      :class="{ 'flex-col': !isNative, 'flex-col-reverse': isNative, 'pb-6': isNative, 'px-6': isNative }">
       <!-- Actions bar -->
       <div class="flex justify-between items-center w-auto px-0 sm:px-4">
         <!-- Download -->
@@ -47,6 +49,8 @@ import close from "@iconify-icons/pajamas/close"
 import download from "@iconify-icons/pajamas/download"
 import left from "@iconify-icons/pajamas/chevron-lg-left"
 import right from "@iconify-icons/pajamas/chevron-lg-right"
+// Capacitor
+import { Capacitor } from "@capacitor/core"
 
 addIcon("close", close)
 addIcon("download", download)
@@ -55,9 +59,14 @@ addIcon("right", right)
 
 const props = defineProps(["photo", "photos"])
 
+const isNative = Capacitor.isNativePlatform()
+
 const photo = ref(null)
 onMounted(() => {
   photo.value = props.photo
+  if (!isNative) {
+    window.scrollTo(0, 1)
+  }
 })
 const photoIndex = computed(() => {
   if (photo.value !== null) {
@@ -112,6 +121,8 @@ const touchStart = (e) => {
 }
 const touchEnd = (e) => {
   touchendX = e.changedTouches[0].screenX
-  checkSwipe()
+  if (isNative) {
+    checkSwipe()
+  }
 }
 </script>
