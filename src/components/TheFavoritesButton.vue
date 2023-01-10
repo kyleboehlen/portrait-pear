@@ -153,14 +153,20 @@ const saveImages = async () => {
 
   await props.photos.forEach(async (photo) => {
     if (!allAssetURLs.includes(photo.compressed_asset_url)) {
-      await saveImage(photo.compressed_asset_url)
+      toDataURL(photo.compressed_asset_url, async (dataUrl) => {
+        await images.store(photo.compressed_asset_url, dataUrl)
+        incrementSave()
+      })
     } else {
-      numSaved.value++
+      incrementSave()
     }
     if (!allAssetURLs.includes(photo.full_res_asset_url)) {
-      await saveImage(photo.full_res_asset_url)
+      toDataURL(photo.full_res_asset_url, async (dataUrl) => {
+        await images.store(photo.full_res_asset_url, dataUrl)
+        incrementSave()
+      })
     } else {
-      numSaved.value++
+      incrementSave()
     }
   })
 
@@ -169,24 +175,26 @@ const saveImages = async () => {
     emit("refreshCache")
   }
 }
-const saveImage = async (src) => {
-  var img = new Image()
-  img.crossOrigin = "anonymous"
-  img.onload = async function () {
-    var canvas = document.createElement("CANVAS")
-    var ctx = canvas.getContext("2d")
-    var dataURL
-    canvas.height = this.naturalHeight
-    canvas.width = this.naturalWidth
-    ctx.drawImage(this, 0, 0)
-    dataURL = canvas.toDataURL("image/jpeg")
-    await images.store(src, dataURL)
-    numSaved.value++
-    if (numSaved.value === numToSave.value) {
-      showSavingModal.value = false
-      emit("refreshCache")
+
+function toDataURL(url, callback) {
+  var xhr = new XMLHttpRequest()
+  xhr.onload = function () {
+    var reader = new FileReader()
+    reader.onloadend = function () {
+      callback(reader.result)
     }
+    reader.readAsDataURL(xhr.response)
   }
-  img.src = src
+  xhr.open("GET", url)
+  xhr.responseType = "blob"
+  xhr.send()
+}
+
+const incrementSave = () => {
+  numSaved.value++
+  if (numSaved.value === numToSave.value) {
+    showSavingModal.value = false
+    emit("refreshCache")
+  }
 }
 </script>

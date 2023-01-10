@@ -1,10 +1,12 @@
 <template>
   <div class="modal w-screen h-screen">
     <div
-      class="bg-base-100 grow w-screen h-screen flex justify-center p-2 flex-nowrap"
-      :class="{ 'flex-col': !isNative, 'flex-col-reverse': isNative, 'pb-6': isNative, 'px-6': isNative }">
+      class="bg-base-100 grow w-screen h-screen flex justify-between sm:p-2 flex-nowrap"
+      :class="{ 'flex-col': !isNative, 'flex-col-reverse': isNative }">
       <!-- Actions bar -->
-      <div class="flex justify-between items-center w-auto px-0 sm:px-4">
+      <div
+        class="flex justify-between items-center w-auto py-2 px-4 sm:px-6"
+        :class="{ 'pb-6': isNative, 'px-6': isNative }">
         <!-- Download -->
         <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="downloadImage">
           <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
@@ -31,18 +33,26 @@
 
       <!-- Image container -->
       <div
+        v-if="isOnline || (useCached && !loading && cachedSource.length > 100)"
         class="w-auto h-5/6 flex justify-center items-center shrink m-1 grow"
         @touchstart="touchStart($event)"
         @touchend="touchEnd($event)">
-        <img :src="photo?.full_res_asset_url" class="object-contain max-h-full rounded-lg" />
+        <img
+          v-if="!useCached && !loading"
+          v-lazy="{ src: photo?.full_res_asset_url, loading: pearLoader, delay: 1000 }"
+          class="object-contain max-h-full rounded-lg" />
+        <img v-else-if="!loading" :src="cachedSource" class="object-contain max-h-full rounded-lg" />
       </div>
+      <NotFoundMessage v-else-if="!loading" msg="Go online to load full-res images :)" class="grow" />
     </div>
   </div>
 </template>
 
 <script setup>
 // Vue
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, nextTick } from "vue"
+// Loader
+import pearLoader from "@/assets/imgs/metronome-pear-white.apng?url"
 // Icons
 import { Icon, addIcon } from "@iconify/vue/offline"
 import close from "@iconify-icons/pajamas/close"
@@ -51,21 +61,47 @@ import left from "@iconify-icons/pajamas/chevron-lg-left"
 import right from "@iconify-icons/pajamas/chevron-lg-right"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
+// Components
+import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
+// Stores
+import { useImagesStore } from "@/stores/images.js"
 
 addIcon("close", close)
 addIcon("download", download)
 addIcon("left", left)
 addIcon("right", right)
 
-const props = defineProps(["photo", "photos"])
+const props = defineProps(["photo", "photos", "cachedPhotos"])
 
 const isNative = Capacitor.isNativePlatform()
+const isOnline = ref(navigator.onLine)
+const loading = ref(true)
+
+const isCached = computed(() => {
+  if (props.cachedPhotos !== undefined && photo.value !== null && isNative) {
+    return props.cachedPhotos.includes(photo.value.full_res_asset_url)
+  }
+
+  return false
+})
+
+const useCached = computed(() => {
+  return isCached.value && isNative && !isOnline.value
+})
 
 const photo = ref(null)
+const cachedSource = ref(null)
+const images = useImagesStore()
 onMounted(() => {
   photo.value = props.photo
-  if (!isNative) {
-    window.scrollTo(0, 1)
+  // Event listener to go online
+  window.addEventListener("online", () => {
+    isOnline.value = true
+  })
+  if (isNative && isCached.value) {
+    loadCachedSource()
+  } else {
+    loading.value = false
   }
 })
 const photoIndex = computed(() => {
@@ -87,19 +123,34 @@ const downloadImage = () => {
   console.log("TODO")
 }
 const goLeft = () => {
-  // console.log(event.isFinal)
-  if (photoIndex.value <= 1) {
-    photo.value = props.photos[props.photos.length - 1]
-  } else {
-    photo.value = props.photos[photoIndex.value - 2]
-  }
+  loading.value = true
+  nextTick(() => {
+    if (photoIndex.value <= 1) {
+      photo.value = props.photos[props.photos.length - 1]
+    } else {
+      photo.value = props.photos[photoIndex.value - 2]
+    }
+    if (isNative) {
+      loadCachedSource()
+    } else {
+      loading.value = false
+    }
+  })
 }
 const goRight = () => {
-  if (photoIndex.value >= props.photos.length) {
-    photo.value = props.photos[0]
-  } else {
-    photo.value = props.photos[photoIndex.value]
-  }
+  loading.value = true
+  nextTick(() => {
+    if (photoIndex.value >= props.photos.length) {
+      photo.value = props.photos[0]
+    } else {
+      photo.value = props.photos[photoIndex.value]
+    }
+    if (isNative) {
+      loadCachedSource()
+    } else {
+      loading.value = false
+    }
+  })
 }
 
 // Swipe
@@ -123,6 +174,17 @@ const touchEnd = (e) => {
   touchendX = e.changedTouches[0].screenX
   if (isNative) {
     checkSwipe()
+  }
+}
+
+const loadCachedSource = () => {
+  if (isCached.value) {
+    images.getBase64(photo.value.full_res_asset_url).then((src) => {
+      cachedSource.value = src
+      loading.value = false
+    })
+  } else {
+    loading.value = false
   }
 }
 </script>

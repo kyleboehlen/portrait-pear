@@ -27,6 +27,7 @@
       class="modal-open"
       :photo="fullsizePhoto"
       :photos="filteredPhotos"
+      :cachedPhotos="cachedPhotos"
       @close="showFullsize = false" />
   </main>
 </template>
@@ -145,7 +146,9 @@ const refreshHomePhotos = () => {
   }
 
   // Set cached
-  setCachedImages()
+  if (Capacitor.isNativePlatform()) {
+    setCachedImages()
+  }
 }
 
 async function setCachedImages() {

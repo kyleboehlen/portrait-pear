@@ -8,7 +8,12 @@
     <!-- The photos, yay -->
     <Transition name="fade">
       <div v-if="isShoot" class="w-full flex flex-wrap items-center justify-around">
-        <PhotoCard v-for="photo in filteredPhotos" :key="photo.id" :photo="photo" :cachedPhotos="cachedPhotos" />
+        <PhotoCard
+          v-for="photo in filteredPhotos"
+          :key="photo.id"
+          :photo="photo"
+          :cachedPhotos="cachedPhotos"
+          @click="fullsizeImage(photo)" />
       </div>
     </Transition>
 
@@ -18,6 +23,15 @@
       :shootSlug="shootSlug"
       :photos="photos"
       @refreshCache="loadCachedImages" />
+
+    <!-- Full size viewer -->
+    <TheFullsizeViewer
+      v-if="showFullsize"
+      class="modal-open"
+      :photo="fullsizePhoto"
+      :photos="filteredPhotos"
+      :cachedPhotos="cachedPhotos"
+      @close="showFullsize = false" />
   </main>
 </template>
 
@@ -32,6 +46,7 @@ import { onMounted, computed, ref, watch } from "vue"
 import TheFavoritesButton from "@/components/TheFavoritesButton.vue"
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 import PhotoCard from "@/components/panel/PhotoCard.vue"
+import TheFullsizeViewer from "@/components/TheFullsizeViewer.vue"
 // Store
 import { useFilterStore } from "@/stores/filter.js"
 import { useFavoritesStore } from "@/stores/favorites.js"
@@ -150,6 +165,14 @@ const loadCachedImages = () => {
   images.getAll().then((values) => {
     cachedPhotos.value = values
   })
+}
+
+// Fullsize viewer
+const showFullsize = ref(false)
+const fullsizePhoto = ref(null)
+const fullsizeImage = (photo) => {
+  fullsizePhoto.value = photo
+  showFullsize.value = true
 }
 </script>
 
