@@ -8,7 +8,7 @@
     <!-- The photos, yay -->
     <Transition name="fade">
       <div v-if="isShoot" class="w-full flex flex-wrap items-center justify-around">
-        <PhotoCard v-for="photo in filteredPhotos" :key="photo.id" :photo="photo" />
+        <PhotoCard v-for="photo in filteredPhotos" :key="photo.id" :photo="photo" :cachedPhotos="cachedPhotos" />
       </div>
     </Transition>
 
@@ -31,8 +31,17 @@ import PhotoCard from "@/components/panel/PhotoCard.vue"
 // Store
 import { useFilterStore } from "@/stores/filter.js"
 import { useFavoritesStore } from "@/stores/favorites.js"
+import { useImagesStore } from "@/stores/images.js"
 
 const props = defineProps(["shoot_slug"])
+
+// Photo refs
+const photos = ref(null)
+const cachedPhotos = ref([])
+
+// Stores
+const favorites = useFavoritesStore()
+const images = useImagesStore()
 
 const shootSlug = computed(() => {
   if (props.shoot_slug === undefined || props.shoot_slug === null) {
@@ -51,7 +60,6 @@ const showFavoritesButton = computed(() => {
   return isShoot.value && Capacitor.isNativePlatform()
 })
 
-const photos = ref(null)
 const filter = useFilterStore()
 const filteredPhotos = computed(() => {
   if (filter.category > 0) {
@@ -62,13 +70,17 @@ const filteredPhotos = computed(() => {
 
 const apiUrl = import.meta.env.VITE_API_URL
 const notFoundMsg = ref("")
-const favorites = useFavoritesStore()
 const getShootFromAPI = async () => {
   apiCallFinished.value = false
   shootFound.value = false
   notFoundMsg.value = "No shoot found :("
 
-  console.log("getting from api")
+  // Load cache if native
+  if (Capacitor.isNativePlatform()) {
+    images.getAll().then((values) => {
+      cachedPhotos.value = values
+    })
+  }
 
   if (Capacitor.isNativePlatform() && !navigator.onLine) {
     // Load favorites from cache
