@@ -13,6 +13,7 @@
           :key="photo.id"
           :photo="photo"
           :cachedPhotos="cachedPhotos"
+          class="hover:cursor-zoom-in"
           @click="fullsizeImage(photo)" />
       </div>
     </Transition>
@@ -145,6 +146,9 @@ const updateFavoritedShoot = async (photos) => {
 }
 
 onMounted(() => {
+  // Default filters to show all
+  filter.setCategory(0)
+
   // Set online listener - regardless if online
   if (Capacitor.isNativePlatform()) {
     window.addEventListener("online", getShootFromAPI) // Bind to online event
