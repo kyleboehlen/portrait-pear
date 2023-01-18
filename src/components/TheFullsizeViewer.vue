@@ -8,9 +8,10 @@
         class="flex justify-between items-center w-auto py-2 px-4 sm:px-6"
         :class="{ 'pb-6': isNative, 'px-6': isNative }">
         <!-- Download -->
-        <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="downloadImage">
-          <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
+        <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="downloadImage" :disabed="downloading">
+          <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" :class="{ 'animate-bounce': downloading }" />
         </button>
+        <a ref="downloadLink" :href="downloadSrc" class="hidden" :download="downloadName"></a>
 
         <!-- Toggle back/forth -->
         <div class="flex justify-center items-center">
@@ -65,6 +66,8 @@ import { Capacitor } from "@capacitor/core"
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 // Stores
 import { useImagesStore } from "@/stores/images.js"
+// Composable
+import { toDataURL } from "@/composables/todataurl.js"
 
 addIcon("close", close)
 addIcon("download", download)
@@ -119,9 +122,27 @@ const photoCount = computed(() => {
 })
 
 // Controls
+const downloadLink = ref(null)
+const downloadSrc = ref("")
+const downloading = ref(false)
+const downloadName = computed(() => {
+  return "portraitpeardownload" + photo.value?.id + ".jpg"
+})
 const downloadImage = () => {
-  console.log("TODO")
+  if (!downloading.value) {
+    downloading.value = true
+    if (isNative && useCached.value) {
+      // I'll get there, be patient, ffs
+    } else {
+      toDataURL(photo.value?.full_res_asset_url, async (dataUrl) => {
+        downloadSrc.value = dataUrl
+        downloadLink.value.click()
+        downloading.value = false
+      })
+    }
+  }
 }
+
 const goLeft = () => {
   loading.value = true
   nextTick(() => {
