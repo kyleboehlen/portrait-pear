@@ -11,7 +11,7 @@
         <a v-if="isNative" href="#download-modal" class="btn btn-sm xs:btn-md sm:btn-lg">
           <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
         </a>
-        <a v-else class="btn btn-sm xs:btn-md sm:btn-lg" :href="downloadHref" target="_blank">
+        <a v-else class="btn btn-sm xs:btn-md sm:btn-lg" :href="downloadLink" target="_blank">
           <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
         </a>
 
@@ -88,6 +88,10 @@ const props = defineProps(["photo", "photos", "cachedPhotos"])
 const isNative = Capacitor.isNativePlatform()
 const isOnline = ref(navigator.onLine)
 const loading = ref(true)
+
+const downloadLink = computed(() => {
+  return photo?.value?.full_res_asset_url
+})
 
 const isCached = computed(() => {
   if (props.cachedPhotos !== undefined && photo.value !== null && isNative) {
