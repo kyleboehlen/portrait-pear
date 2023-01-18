@@ -8,10 +8,12 @@
         class="flex justify-between items-center w-auto py-2 px-4 sm:px-6"
         :class="{ 'pb-6': isNative, 'px-6': isNative }">
         <!-- Download -->
-        <button class="btn btn-sm xs:btn-md sm:btn-lg" @click="downloadImage" :disabed="downloading">
-          <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" :class="{ 'animate-bounce': downloading }" />
-        </button>
-        <a ref="downloadLink" :href="downloadSrc" class="hidden" :download="downloadName"></a>
+        <a v-if="isNative" href="#download-modal" class="btn btn-sm xs:btn-md sm:btn-lg">
+          <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
+        </a>
+        <a v-else class="btn btn-sm xs:btn-md sm:btn-lg" :href="downloadHref" target="_blank">
+          <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
+        </a>
 
         <!-- Toggle back/forth -->
         <div class="flex justify-center items-center">
@@ -45,6 +47,15 @@
         <img v-else-if="!loading" :src="cachedSource" class="object-contain max-h-full rounded-lg" />
       </div>
       <NotFoundMessage v-else-if="!loading" msg="Go online to load full-res images :)" class="grow" />
+
+      <div class="modal" id="download-modal">
+        <div class="modal-box">
+          <p class="py-4">Long press the image to save it to your gallery :)</p>
+          <div class="modal-action">
+            <a href="#" class="btn btn-success">Ok</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -66,8 +77,6 @@ import { Capacitor } from "@capacitor/core"
 import NotFoundMessage from "@/components/panel/NotFoundMessage.vue"
 // Stores
 import { useImagesStore } from "@/stores/images.js"
-// Composable
-import { toDataURL } from "@/composables/todataurl.js"
 
 addIcon("close", close)
 addIcon("download", download)
@@ -120,28 +129,6 @@ const photoCount = computed(() => {
   }
   return null
 })
-
-// Controls
-const downloadLink = ref(null)
-const downloadSrc = ref("")
-const downloading = ref(false)
-const downloadName = computed(() => {
-  return "portraitpeardownload" + photo.value?.id + ".jpg"
-})
-const downloadImage = () => {
-  if (!downloading.value) {
-    downloading.value = true
-    if (isNative && useCached.value) {
-      // I'll get there, be patient, ffs
-    } else {
-      toDataURL(photo.value?.full_res_asset_url, async (dataUrl) => {
-        downloadSrc.value = dataUrl
-        downloadLink.value.click()
-        downloading.value = false
-      })
-    }
-  }
-}
 
 const goLeft = () => {
   loading.value = true
