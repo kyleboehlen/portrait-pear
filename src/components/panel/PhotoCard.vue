@@ -25,6 +25,8 @@ import logo from "@/assets/imgs/green-camera-logo.png?url"
 import { useImagesStore } from "@/stores/images.js"
 // Capacitor
 import { Capacitor } from "@capacitor/core"
+// Composable
+import { toDataURL } from "@/composables/todataurl.js"
 
 const props = defineProps(["photo", "cache", "cachedPhotos"])
 
@@ -74,17 +76,12 @@ const setOffline = () => {
   isOnline.value = false
 }
 
+// const toDataURL = useToDataURL()
 const onLoad = () => {
   if (props.cache && !isCached.value && Capacitor.isNativePlatform() && navigator.onLine) {
-    // Generate base64
-    const canvas = document.createElement("canvas")
-    const context = canvas.getContext("2d")
-    canvas.height = img.value.naturalHeight
-    canvas.width = img.value.naturalWidth
-    context.drawImage(img.value, 0, 0)
-    const baseSixtyFour = canvas.toDataURL("image/jpeg")
-    // Persist to database
-    images.store(props.photo.compressed_asset_url, baseSixtyFour)
+    toDataURL(props.photo.full_res_asset_url, async (dataUrl) => {
+      images.store(props.photo.compressed_asset_url, dataUrl)
+    })
   }
 }
 

@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <!--  -->
+  <!-- Percentage loader -->
   <Teleport to="body">
     <div
       v-if="showSavingModal"
@@ -76,6 +76,8 @@ import heartFilled from "@iconify-icons/mdi/cards-heart"
 // Store
 import { useFavoritesStore } from "@/stores/favorites.js"
 import { useImagesStore } from "@/stores/images.js"
+// Composable
+import { toDataURL } from "@/composables/todataurl.js"
 
 const favorites = useFavoritesStore()
 
@@ -174,20 +176,6 @@ const saveImages = async () => {
     showSavingModal.value = false
     emit("refreshCache")
   }
-}
-
-function toDataURL(url, callback) {
-  var xhr = new XMLHttpRequest()
-  xhr.onload = function () {
-    var reader = new FileReader()
-    reader.onloadend = function () {
-      callback(reader.result)
-    }
-    reader.readAsDataURL(xhr.response)
-  }
-  xhr.open("GET", url)
-  xhr.responseType = "blob"
-  xhr.send()
 }
 
 const incrementSave = () => {
