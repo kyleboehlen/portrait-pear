@@ -8,10 +8,10 @@
         class="flex justify-between items-center w-auto py-2 px-4 sm:px-6"
         :class="{ 'pb-6': isNative, 'px-6': isNative }">
         <!-- Download -->
-        <a v-if="isNative" href="#download-modal" class="btn btn-sm xs:btn-md sm:btn-lg">
+        <!-- <a v-if="isNative" href="#download-modal" class="btn btn-sm xs:btn-md sm:btn-lg">
           <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
-        </a>
-        <a v-else class="btn btn-sm xs:btn-md sm:btn-lg" :href="downloadLink" target="_blank">
+        </a> -->
+        <a class="btn btn-sm xs:btn-md sm:btn-lg" :href="downloadLink" target="_blank">
           <Icon icon="download" class="h-4/6 w-auto px-0 sm:px-1" />
         </a>
 
