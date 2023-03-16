@@ -60,7 +60,6 @@
 
         <!-- If native: Favorited shoots ELSE: app store -->
         <BottomButton v-if="isNative" icon="heart" label="Favorites" @click="navigate('favorites')" />
-        <BottomButton v-else icon="app" label="App" @click="navigate('app')" />
       </div>
     </label>
   </label>
@@ -116,9 +115,6 @@ const router = useRouter()
 const navigate = (target) => {
   if (target == "instagram") {
     window.open("https://www.instagram.com/portraitpearofficial/", "_blank")
-  } else if (target == "app") {
-    // TODO: update this to my app id
-    window.open("https://apps.apple.com/us/app/instagram/id389801252", "_blank")
   }
 
   // Push other routes
