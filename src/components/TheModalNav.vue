@@ -114,7 +114,7 @@ const modalToggle = ref()
 const router = useRouter()
 const navigate = (target) => {
   if (target == "instagram") {
-    window.open("https://www.instagram.com/portraitpearofficial/", "_blank")
+    window.open("https://www.instagram.com/portraitpear/", "_blank")
   }
 
   // Push other routes
