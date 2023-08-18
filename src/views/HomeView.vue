@@ -90,9 +90,6 @@ const filteredPhotos = computed(() => {
 })
 
 onMounted(() => {
-  // Default filters to portraits
-  filter.setCategory(1)
-
   // Set cached images if we're native
   if (Capacitor.isNativePlatform()) {
     setCachedImages().then(() => {
